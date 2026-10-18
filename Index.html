@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DJ.RKHF Website Builder</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #eef2f7;
+  color: #172033;
+}
+header {
+  background: #10294b;
+  color: white;
+  text-align: center;
+  padding: 25px 15px;
+}
+header h1 { margin: 0 0 8px; }
+main {
+  max-width: 1000px;
+  margin: 25px auto;
+  padding: 15px;
+}
+.panel {
+  background: white;
+  padding: 22px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px #00000012;
+}
+label {
+  display: block;
+  font-weight: bold;
+  margin-top: 15px;
+}
+input, textarea, select {
+  width: 100%;
+  padding: 12px;
+  margin-top: 7px;
+  border: 1px solid #bbc5d3;
+  border-radius: 6px;
+  font: inherit;
+}
+textarea { min-height: 90px; }
+button {
+  border: 0;
+  border-radius: 7px;
+  padding: 13px 17px;
+  margin: 12px 8px 0 0;
+  font-weight: bold;
+  cursor: pointer;
+  background: #1765cc;
+  color: white;
+}
+button:hover { opacity: .88; }
+#preview {
+  background: white;
+  border: 1px solid #ccd4df;
+  border-radius: 10px;
+  overflow: hidden;
+  min-height: 250px;
+}
+.siteHero {
+  padding: 45px 20px;
+  text-align: center;
+  color: white;
+}
+.siteHero h1 { font-size: 32px; }
+.siteContent { padding: 25px; line-height: 1.7; }
+.siteFooter {
+  padding: 18px;
+  text-align: center;
+  background: #f0f3f8;
+}
+.small { color: #5b6575; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>DJ.RKHF</h1>
+  <div>Website Builder &amp; Publisher</div>
+  <p>Build your website. Preview it. Download your files.</p>
+</header>
+
+<main>
+  <section class="panel">
+    <h2>Create Your Website</h2>
+    <p>Enter your information below to build a custom website.</p>
+
+    <label for="business">Business or Website Name</label>
+    <input id="business" value="My New Business">
+
+    <label for="tagline">Headline or Slogan</label>
+    <input id="tagline" value="Welcome to our website">
+
+    <label for="about">About Your Business</label>
+    <textarea id="about">We provide quality services and work hard to serve our customers.</textarea>
+
+    <label for="services">Products or Services</label>
+    <textarea id="services">Our Services
+Professional service
+Customer support
+Quality solutions</textarea>
+
+    <label for="email">Contact Email</label>
+    <input id="email" type="email" placeholder="you@example.com">
+
+    <label for="color">Website Color</label>
+    <select id="color">
+      <option value="#10294b">Professional Blue</option>
+      <option value="#174b35">Forest Green</option>
+      <option value="#5a2b82">Royal Purple</option>
+      <option value="#9b4b13">Burnt Orange</option>
+      <option value="#222222">Black</option>
+    </select>
+
+    <button type="button" onclick="buildSite()">Preview Website</button>
+    <button type="button" onclick="downloadSite()">Download Website HTML</button>
+    <p class="small">Your information is used in this page to generate the preview and file.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Your Website Preview</h2>
+    <div id="preview"></div>
+  </section>
+
+  <section class="panel">
+    <h2>How Publishing Works</h2>
+    <ol>
+      <li>Create your website using the form above.</li>
+      <li>Preview and download your HTML file.</li>
+      <li>Upload the file to a GitHub repository.</li>
+      <li>Enable GitHub Pages in repository Settings.</li>
+    </ol>
+    <p>GitHub Pages can host supported static websites for free.</p>
+    <p class="small">This version generates downloadable websites. Automatic publishing directly from this app is not configured yet.</p>
+  </section>
+</main>
+
+<script>
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, function(ch) {
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[ch];
+  });
+}
+
+function buildSite() {
+  const name = escapeHTML(document.getElementById("business").value);
+  const tagline = escapeHTML(document.getElementById("tagline").value);
+  const about = escapeHTML(document.getElementById("about").value);
+  const services = escapeHTML(document.getElementById("services").value);
+  const email = document.getElementById("email").value.trim();
+  const color = document.getElementById("color").value;
+
+  const safeEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    ? email : "";
+
+  document.getElementById("preview").innerHTML = `
+    <div class="siteHero" style="background:${color}">
+      <h1>${name || "My Website"}</h1>
+      <p>${tagline}</p>
+    </div>
+    <div class="siteContent">
+      <h2>About Us</h2>
+      <p>${about.replace(/\n/g, "<br>")}</p>
+      <h2>Our Products &amp; Services</h2>
+      <p>${services.replace(/\n/g, "<br>")}</p>
+      ${safeEmail
+        ? `<h2>Contact Us</h2><p><a href="mailto:${escapeHTML(safeEmail)}">${escapeHTML(safeEmail)}</a></p>`
+        : ""}
+    </div>
+    <div class="siteFooter">Copyright &copy; ${new Date().getFullYear()} ${name}</div>
+  `;
+}
+
+function downloadSite() {
+  const name = document.getElementById("business").value.trim() || "My Website";
+  const tagline = document.getElementById("tagline").value.trim();
+  const about = document.getElementById("about").value;
+  const services = document.getElementById("services").value;
+  const email = document.getElementById("email").value.trim();
+  const color = document.getElementById("color").value;
+
+  const safeEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    ? email : "";
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${escapeHTML(name)}</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;color:#172033}
+.hero{background:${color};color:white;text-align:center;padding:55px 20px}
+main{max-width:850px;margin:auto;padding:25px;line-height:1.8}
+footer{text-align:center;background:#f0f3f8;padding:20px}
+</style>
+</head>
+<body>
+<header class="hero">
+<h1>${escapeHTML(name)}</h1>
+<p>${escapeHTML(tagline)}</p>
+</header>
+<main>
+<h2>About Us</h2>
+<p>${escapeHTML(about).replace(/\n/g, "<br>")}</p>
+<h2>Our Products &amp; Services</h2>
+<p>${escapeHTML(services).replace(/\n/g, "<br>")}</p>
+${safeEmail ? `<h2>Contact Us</h2><p><a href="mailto:${escapeHTML(safeEmail)}">${escapeHTML(safeEmail)}</a></p>` : ""}
+</main>
+<footer>Copyright &copy; ${new Date().getFullYear()} ${escapeHTML(name)}</footer>
+</body>
+</html>`;
+
+  const blob = new Blob([html], {type: "text/html;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "index.html";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+buildSite();
+</script>
+</body>
+</html>
